@@ -1,0 +1,33 @@
+name: 'Job status slack notification'
+description: 'Job status slack notification'
+inputs:
+  slack_channel_id:
+    description: 'slack channel id'
+    required: true
+    default: 'none'
+  slack_bot_token:
+    description: 'slack bot token'
+    required: true
+    default: 'none'
+runs:
+  using: "composite"
+  steps:
+      - name: Notify slack success
+        if: success()
+        env:
+          SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: ${{ inputs.slack_channel_id }}
+          status: SUCCESS
+          color: good
+
+      - name: Notify slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: ${{ inputs.slack_channel_id }}
+          status: FAILED
+          color: danger
